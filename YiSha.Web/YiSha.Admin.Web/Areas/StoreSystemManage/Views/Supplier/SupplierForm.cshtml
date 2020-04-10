@@ -1,0 +1,114 @@
+﻿@{
+    Layout = "~/Views/Shared/_FormWhite.cshtml";
+}
+
+<div class="wrapper animated fadeInRight">
+    <form id="form" class="form-horizontal m">
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">编号 <font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="code" col="Code" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">供应商 <font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="name" col="Name" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">手机号码 </label>
+            <div class="col-sm-4">
+                <input id="phone" col="Phone" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">固话 </label>
+            <div class="col-sm-4">
+                <input id="fixphone" col="Fixphone" type="text" class="form-control" />
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">联系人 </label>
+            <div class="col-sm-4">
+                <input id="contact" col="Contact" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">联系地址 </label>
+            <div class="col-sm-4">
+                <input id="address" col="Address" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">银行名称 </label>
+            <div class="col-sm-4">
+                <input id="bankName" col="BankName" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">银行卡号 </label>
+            <div class="col-sm-4">
+                <input id="bankCard" col="BankCard" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">Email </label>
+            <div class="col-sm-4">
+                <input id="email" col="Email" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">备注 </label>
+            <div class="col-sm-4">
+                <input id="reamrk" col="Reamrk" type="text" class="form-control" />
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+    var id = ys.request("id");
+    $(function () {
+        getForm();
+
+        $('#form').validate({
+            rules: {
+                address: { required: true }
+            }
+        });
+    });
+
+    function getForm() {
+        if (id > 0) {
+            ys.ajax({
+                url: '@Url.Content("~/StoreSystemManage/Supplier/GetFormJson")' + '?id=' + id,
+                type: 'get',
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        $('#form').setWebControls(obj.Result);
+                    }
+                }
+            });
+        }
+        else {
+            var defaultData = {};
+            $('#form').setWebControls(defaultData);
+        }
+    }
+
+    function saveForm(index) {
+        if ($('#form').validate().form()) {
+            var postData = $('#form').getWebControls({ Id: id });
+            ys.ajax({
+                url: '@Url.Content("~/StoreSystemManage/Supplier/SaveFormJson")',
+                type: 'post',
+                data: postData,
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        ys.msgSuccess(obj.Message);
+                        parent.searchGrid();
+                        parent.layer.close(index);
+                    }
+                    else {
+                        ys.msgError(obj.Message);
+                    }
+                }
+            });
+        }
+    }
+</script>
+

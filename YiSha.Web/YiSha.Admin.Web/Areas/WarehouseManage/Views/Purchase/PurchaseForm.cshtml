@@ -1,0 +1,206 @@
+﻿@{
+    Layout = "~/Views/Shared/_FormWhite.cshtml";
+}
+
+<div class="wrapper animated fadeInRight">
+    <form id="form" class="form-horizontal m">
+        <div class="form-group">
+            <label class="col-sm-1 control-label ">入库仓库<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <div id="warehouseId" col="WarehouseId"></div>
+            </div>
+            <label class="col-sm-1 control-label ">供应商<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <div id="subpplierId" col="SubpplierId"></div>
+            </div>
+            <label class="col-sm-1 control-label ">结算类型<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <div id="settlementType" col="SettlementType"></div>
+            </div>
+            <label class="col-sm-1 control-label ">采购人<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <div id="buyer" col="Buyer"></div>
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label class="col-sm-1 control-label ">单据状态<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <div id="state" col="State"></div>
+            </div>
+            <label class="col-sm-1 control-label ">纸采购单号<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <input id="purchaseNote" col="PurchaseNote" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-1 control-label ">运费<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <input id="freight" col="Freight" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-1 control-label ">预付款<font class="red"> *</font></label>
+            <div class="col-sm-2">
+                <input id="deposit" col="Deposit" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label ">备注<font class="red"> *</font></label>
+            <div class="col-sm-5">
+                <input id="remark" col="Remark" type="text" class="form-control" />
+            </div>
+
+
+
+            @*<label class="col-sm-2 control-label ">制单人<font class="red"> *</font></label>
+                <div class="col-sm-4">
+                    <input id="preparedBy" col="PreparedBy" type="text" class="form-control" />
+                </div>
+                <label class="col-sm-2 control-label ">制单时间<font class="red"> *</font></label>
+                <div class="col-sm-4">
+                    <input id="preparedTime" col="PreparedTime" type="text" class="form-control" />
+                </div>
+                <label class="col-sm-2 control-label ">结算人<font class="red"> *</font></label>
+                <div class="col-sm-4">
+                    <input id="clearingUserId" col="ClearingUserId" type="text" class="form-control" />
+                </div>
+                <label class="col-sm-2 control-label ">结算时间<font class="red"> *</font></label>
+                <div class="col-sm-4">
+                    <input id="clearingTime" col="ClearingTime" type="text" class="form-control" />
+                </div>*@
+
+        </div>
+        <div class="col-sm-1">
+            <a id="btnAdd" class="btn btn-success" onclick="showSaveForm()"><i class="fa fa-plus"></i> 添加商品</a>
+        </div>
+        <div class="col-sm-1">
+            <a id="btnAdd" class="btn btn-success" onclick="#"><i class="fa fa-remove"></i> 移除商品</a>
+        </div>
+        <div class="col-sm-1">
+            <a id="btnAdd" class="btn btn-success" onclick="window.open('PurchasePrint');"><i class="fa fa-plus"></i> 打印</a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="gridTable" data-mobile-responsive="true"></table>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var id = ys.request("id");
+    $(function () {
+        getForm();
+
+        $('#warehouseId').ysComboBox({ url: '@Url.Content("~/WarehouseManage/Warehouse/GetZtreeList")', async: false, key: 'id', value: 'name', class: "form-control"});
+        $('#subpplierId').ysComboBox({ url: '@Url.Content("~/StoreSystemManage/Supplier/GetZtreeList")', async: false, key: 'id', value: 'name', class: "form-control"});
+        $('#settlementType').ysComboBox({ url: '@Url.Content("~/SystemManage/Mixed/GetZtreeListForJzlx")', async: false, key: 'id', value: 'name', class: "form-control"});
+        $('#state').ysComboBox({ url: '@Url.Content("~/SystemManage/Mixed/GetZtreeListForBuyer")', async: false, key: 'id', value: 'name', class: "form-control"});
+        $('#buyer').ysComboBox({ url: '@Url.Content("~/OrganizationManage/User/GetUserBuyer")', async: false, key: 'id', value: 'name', class: "form-control"});
+        initGrid();
+        $('#form').validate({
+            rules: {
+                purchaseNote: { required: true }
+            }
+        });
+    });
+
+    function initGrid() {
+        var queryUrl = '@Url.Content("~/WarehouseManage/Repertory/GetPageListJsonForMap")';
+        $('#gridTable').ysTable({
+            url: queryUrl,
+            columns: [
+                { field: 'Id', title: 'Id', visible: false },
+                { checkbox: true, visible: true },
+                { field: 'ProductName', title: '商品名称' },
+                { field: 'ProductCode', title: '商品编码' },
+                { field: 'ProductBarcode', title: '商品条码' },
+                { field: 'ProductUnit', title: '单位' },
+                { field: 'ProductSpec', title: '商品规格' },
+                { field: 'Quantity', title: '数量' },
+                { field: 'SalesPrice', title: '零售价' },
+                { field: 'CosePrice', title: '成本价' },
+                { field: 'UsingModels', title: '适用车型' },
+                { field: 'ProductBrand', title: '品牌' }
+            ],
+            //queryParams: function (params) {
+            //    var pagination = $('#gridTable').ysTable('getPagination', params);
+            //    var queryString = $('#searchDiv').getWebControls(pagination);
+            //    return queryString;
+            //},
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            pageList: 10,
+            onClickCell: function (field, value, row, $element) {
+                if (field == 'Quantity' || field == 'CosePrice') {
+                    $element.attr('contenteditable', true);
+                    $element.blur(function () {
+                        let index = $element.parent().data('index');
+                        let tdValue = $element.html();
+
+                        saveData(index, field, tdValue);
+                    })
+                }
+            }
+        });
+    }
+
+    function saveData(index, field, value) {
+        $table.bootstrapTable('updateCell', {
+            index: index,       //行索引
+            field: field,       //列名
+            value: value        //cell值
+        })
+    }
+
+    function getForm() {
+        if (id > 0) {
+            ys.ajax({
+                url: '@Url.Content("~/WarehouseManage/Purchase/GetFormJson")' + '?id=' + id,
+                type: 'get',
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        $('#form').setWebControls(obj.Result);
+                    }
+                }
+            });
+        }
+        else {
+            var defaultData = {};
+            $('#form').setWebControls(defaultData);
+        }
+    }
+
+    function saveForm(index) {
+        if ($('#form').validate().form()) {
+            var postData = $('#form').getWebControls({ Id: id });
+            ys.ajax({
+                url: '@Url.Content("~/WarehouseManage/Purchase/SaveFormJson")',
+                type: 'post',
+                data: postData,
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        ys.msgSuccess(obj.Message);
+                        parent.searchGrid();
+                        parent.layer.close(index);
+                    }
+                    else {
+                        ys.msgError(obj.Message);
+                    }
+                }
+            });
+        }
+    }
+
+    function showSaveForm() {
+        @*ys.openDialog({
+            title: '选择商品',
+            content: '@Url.Content("~/ProductManage/Product/ProductIndex")',
+            width: "1300px",
+            height: "600px",
+            callback: function (index, layero) {
+                var iframeWin = window[layero.find('iframe')[1]['name']];
+                iframeWin.saveForm(index);
+            }
+        });*@
+
+    }
+
+</script>
+

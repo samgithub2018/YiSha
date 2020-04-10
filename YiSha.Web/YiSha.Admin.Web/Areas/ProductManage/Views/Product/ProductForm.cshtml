@@ -1,0 +1,160 @@
+﻿@{
+    Layout = "~/Views/Shared/_FormWhite.cshtml";
+}
+
+<div class="wrapper animated fadeInRight">
+    <form id="form" class="form-horizontal m">
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">商品分类<font class="red"> *</font></label>
+            <div class="col-sm-8">
+                <div id="productClassId" col="ProductClassId"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">商品编码<font class="red"> *</font></label>
+            <div class="col-sm-8">
+                <input id="code" col="Code" type="text" class="form-control" readonly="readonly" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">商品名称<font class="red"> *</font></label>
+            <div class="col-sm-8">
+                <input id="name" col="Name" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">规格型号</label>
+            <div class="col-sm-8">
+                <input id="spec" col="Spec" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">适用车型</label>
+            <div class="col-sm-8">
+                <input id="usingModels" col="UsingModels" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">商品品牌</label>
+            <div class="col-sm-8">
+                <input id="brand" col="Brand" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">商品单位</label>
+            <div class="col-sm-8">
+                <input id="unit" col="Unit" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">商品条码</label>
+            <div class="col-sm-8">
+                <input id="barcode" col="Barcode" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">成本价</label>
+            <div class="col-sm-8">
+                <input id="costPrice" col="CostPrice" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">销售价</label>
+            <div class="col-sm-8">
+                <input id="salesPrice" col="SalesPrice" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">批发价</label>
+            <div class="col-sm-8">
+                <input id="tradePrice" col="TradePrice" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">最小库存</label>
+            <div class="col-sm-8">
+                <input id="minInventory" col="MinInventory" type="text" class="form-control" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var id = ys.request("id");
+    $(function () {
+        $('#productClassId').ysComboBox({
+            url: '@Url.Content("~/ProductManage/ProductClass/GetZtreeInfoJson")',
+            async: false,
+            key: 'id',
+            value: 'name',
+            onChange: function (id) {
+
+            }
+        });
+
+
+        //$('#ProductClassId').attr("disabled", "disabled").attr("readonly", "readonly");
+
+        getForm();
+
+        $('#form').validate({
+            rules: {
+                deparmentId: { required: true },
+                //code: { required: true },
+                //productClassId: { required: true },
+                name: { required: true }
+            }
+        });
+    });
+
+
+    function getForm() {
+        if (id > 0) {
+            $('#productClassId_select').attr("disabled", "disabled");
+            ys.ajax({
+                url: '@Url.Content("~/ProductManage/Product/GetFormJson")' + '?id=' + id,
+                type: 'get',
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        $('#form').setWebControls(obj.Result);
+                    }
+                }
+            });
+        }
+        else {
+            var defaultData = {};
+            $('#form').setWebControls(defaultData);
+        }
+    }
+
+    function saveForm(index) {
+        var r = $("#productClassId").ysComboBox("getValue");
+        if (r == -1) {
+            alert("请选择商品分类！");
+            return;
+        }
+        if ($('#form').validate({
+            rules:{
+                name: { required: true },
+            }
+        }).form()) {
+            var postData = $('#form').getWebControls({ Id: id });
+            ys.ajax({
+                url: '@Url.Content("~/ProductManage/Product/SaveFormJson")',
+                type: 'post',
+                data: postData,
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        ys.msgSuccess(obj.Message);
+                        parent.searchGrid();
+                        parent.layer.close(index);
+                    }
+                    else {
+                        ys.msgError(obj.Message);
+                    }
+                }
+            });
+        }
+    }
+</script>
+
